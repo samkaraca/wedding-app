@@ -1,50 +1,39 @@
-# Welcome to your Expo app 👋
+# Wedding App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a wedding invitation management app built with React Native and Expo Router.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Swipeable Tabs**: Navigate between "Davetliler" (Guests) and "Giderler" (Expenses) tabs by swiping or tapping
+- **Guest Management**: Add, edit, and manage wedding guests
+- **Expense Tracking**: Track wedding-related expenses
+- **Cross-platform**: Works on both iOS and Android
 
-   ```bash
-   npm install
-   ```
+## Android-Specific Fixes
 
-2. Start the app
+The app includes specific fixes for Android compatibility:
 
-   ```bash
-   npx expo start
-   ```
+1. **Safe Area Handling**: Uses `useSafeAreaInsets` from `react-native-safe-area-context` to ensure the bottom tab bar doesn't overlap with system navigation buttons
+2. **Custom Tab Bar**: Implements a custom tab bar to prevent flickering issues that occur with Material Top Tabs positioned at the bottom on Android
+3. **Proper Layout**: The tab bar is positioned correctly above the Android navigation bar
 
-In the output, you'll find options to open the app in a
+## Technical Implementation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Navigation**: Uses `@react-navigation/material-top-tabs` for swipeable tab navigation
+- **Safe Areas**: Wrapped in `SafeAreaProvider` for proper safe area handling
+- **Custom Components**: Custom tab bar implementation to fix Android-specific issues
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Getting Started
 
-## Get a fresh project
+1. Install dependencies: `npm install`
+2. Start the development server: `npm start`
+3. Run on Android: `npm run android`
+4. Run on iOS: `npm run ios`
 
-When you're ready, run:
+## Architecture
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `/app/(tabs)/`: Tab-based navigation structure
+- `/components/`: Reusable UI components
+- `/hooks/`: Custom React hooks
+- `/utils/`: Utility functions
+- `/types/`: TypeScript type definitions
