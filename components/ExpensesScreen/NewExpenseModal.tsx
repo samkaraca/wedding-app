@@ -1,4 +1,4 @@
-import { EXPENSE_CATEGORIES } from "@/app/(tabs)/explore";
+import { EXPENSE_CATEGORIES } from ".";
 import { Expense } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";

@@ -1,8 +1,8 @@
-import { EXPENSE_CATEGORIES } from "@/app/(tabs)/explore";
 import { formatCurrency } from "@/lib/format";
 import { Ionicons } from "@expo/vector-icons";
 import { Dispatch, SetStateAction } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { EXPENSE_CATEGORIES } from ".";
 
 export const PageHeader = ({
     stats,
