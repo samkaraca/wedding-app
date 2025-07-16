@@ -1,33 +1,17 @@
-import { getCategoryInfo } from "@/app/(tabs)/explore";
+import { getCategoryInfo } from "@/components/ExpensesScreen";
 import { formatCurrency } from "@/lib/format";
 import { Expense } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export const ExpenseCard = ({ item, isSelected, isPaid, bulkSelectMode, toggleExpenseSelection, togglePaid, openEditModal, startBulkSelect }: { item: Expense; isSelected: boolean; isPaid: boolean, bulkSelectMode: boolean, toggleExpenseSelection: (id: string) => void, togglePaid: (id: string) => void, openEditModal: (expense: Expense) => void, startBulkSelect: () => void }) => {
+export const ExpenseCard = ({ item, isSelected, isPaid, bulkSelectMode, toggleExpenseSelection, togglePaid, startBulkSelect }: { item: Expense; isSelected: boolean; isPaid: boolean, bulkSelectMode: boolean, toggleExpenseSelection: (id: string) => void, togglePaid: (id: string) => void, startBulkSelect: () => void }) => {
     const category = getCategoryInfo(item.category);
-    let tapCount = 0;
 
     const handlePress = () => {
-        tapCount++;
-        if (tapCount === 1) {
-            setTimeout(() => {
-                if (tapCount === 1) {
-                    // Single tap
-                    if (bulkSelectMode) {
-                        toggleExpenseSelection(item.id);
-                    } else {
-                        // Toggle paid status on single tap
-                        togglePaid(item.id);
-                    }
-                } else if (tapCount === 2) {
-                    // Double tap - open edit modal
-                    if (!bulkSelectMode) {
-                        openEditModal(item);
-                    }
-                }
-                tapCount = 0;
-            }, 300);
+        if (bulkSelectMode) {
+            toggleExpenseSelection(item.id);
+        } else {
+            togglePaid(item.id);
         }
     };
 
