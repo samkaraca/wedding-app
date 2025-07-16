@@ -54,7 +54,7 @@ export default function InvitationScreen() {
   const [selectedPeople, setSelectedPeople] = useState<Set<string>>(new Set());
   const [messageModalVisible, setMessageModalVisible] = useState(false);
   const [messageText, setMessageText] = useState('');
-  const [actionMenuVisible, setActionMenuVisible] = useState<string | null>(null);
+
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedContacts, setSelectedContacts] = useState(new Set<string>());
   const [contactsLoading, setContactsLoading] = useState(false);
@@ -349,8 +349,6 @@ export default function InvitationScreen() {
     setSelectedPeople(new Set());
   };
 
-
-
   // SMS messaging functions
   const sendBulkSMS = () => {
     if (selectedPeople.size === 0) {
@@ -428,28 +426,14 @@ export default function InvitationScreen() {
 
   const renderPerson = ({ item }: { item: Person; index: number; section: any }) => {
     const isSelected = selectedPeople.has(item.id);
-    let tapCount = 0;
 
     const handlePress = () => {
-      tapCount++;
-      if (tapCount === 1) {
-        setTimeout(() => {
-          if (tapCount === 1) {
-            // Single tap
-            if (bulkSelectMode) {
-              togglePersonSelection(item.id);
-            } else {
-              // Toggle invited status on single tap
-              toggleInvited(item.id);
-            }
-          } else if (tapCount === 2) {
-            // Double tap - show action menu
-            if (!bulkSelectMode) {
-              setActionMenuVisible(item.id);
-            }
-          }
-          tapCount = 0;
-        }, 300);
+      // Single tap behavior only
+      if (bulkSelectMode) {
+        togglePersonSelection(item.id);
+      } else {
+        // Toggle invited status on single tap
+        toggleInvited(item.id);
       }
     };
 
@@ -506,21 +490,6 @@ export default function InvitationScreen() {
   const stats = {
     total: people.length,
     invited: people.filter(p => p.invited).length
-  };
-
-  const handleFabPress = () => {
-    openModal();
-  };
-
-  const handleAddPerson = () => {
-    openModal();
-    setFabOpen(false);
-  };
-
-  // Floating FAB action: open the contacts modal and load contacts
-  const handleImportContacts = () => {
-    openContactsModal();
-    setFabOpen(false);
   };
 
   const openModal = () => {
@@ -688,7 +657,7 @@ export default function InvitationScreen() {
           <View style={styles.fabContainer}>
             <TouchableOpacity
               style={[styles.fabButton, styles.fabPrimary]}
-              onPress={handleFabPress}
+              onPress={openModal}
             >
               <Ionicons name="add" size={24} color="white" />
             </TouchableOpacity>
@@ -722,6 +691,41 @@ export default function InvitationScreen() {
                   {selectedPeople.size} kişi seçildi
                 </Text>
                 <View style={styles.stickyBulkActionButtons}>
+                  {/* Single person actions - only show when exactly one person is selected */}
+                  {selectedPeople.size === 1 && (
+                    <>
+                      <TouchableOpacity
+                        style={[styles.stickyBulkActionButton, { backgroundColor: '#25D366' }]}
+                        onPress={() => {
+                          const selectedPersonId = Array.from(selectedPeople)[0];
+                          const person = people.find(p => p.id === selectedPersonId);
+                          if (person?.phone) {
+                            openWhatsApp(person.phone);
+                          }
+                        }}
+                      >
+                        <Ionicons name="logo-whatsapp" size={18} color="white" />
+                        <Text style={styles.stickyBulkActionButtonText}>WhatsApp</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.stickyBulkActionButton, { backgroundColor: '#2196F3' }]}
+                        onPress={() => {
+                          const selectedPersonId = Array.from(selectedPeople)[0];
+                          const person = people.find(p => p.id === selectedPersonId);
+                          if (person) {
+                            openEditModal(person);
+                            cancelBulkSelect();
+                          }
+                        }}
+                      >
+                        <Ionicons name="create" size={18} color="white" />
+                        <Text style={styles.stickyBulkActionButtonText}>Düzenle</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+
+                  {/* Bulk actions - show when one or more people are selected */}
                   <TouchableOpacity
                     style={[styles.stickyBulkActionButton, { backgroundColor: '#007AFF' }]}
                     onPress={sendBulkSMS}
@@ -1011,67 +1015,7 @@ export default function InvitationScreen() {
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* Action Menu Modal - Bottom Sheet Style */}
-      {actionMenuVisible && (
-        <Modal
-          transparent={true}
-          visible={true}
-          onRequestClose={() => setActionMenuVisible(null)}
-          animationType="slide"
-        >
-          <View style={styles.actionMenuOverlay}>
-            <TouchableOpacity
-              style={styles.actionMenuBackdrop}
-              onPress={() => setActionMenuVisible(null)}
-            />
-            <View style={styles.actionMenuBottomSheet}>
-              <View style={styles.actionMenuHandle} />
-              <View style={styles.actionMenuContent}>
-                <TouchableOpacity
-                  style={styles.actionMenuItem}
-                  onPress={() => {
-                    const person = people.find(p => p.id === actionMenuVisible);
-                    if (person?.phone) {
-                      openWhatsApp(person.phone);
-                    }
-                    setActionMenuVisible(null);
-                  }}
-                >
-                  <Ionicons name="logo-whatsapp" size={24} color="#6B7280" />
-                  <Text style={styles.actionMenuText}>WhatsApp Gönder</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.actionMenuItem}
-                  onPress={() => {
-                    const person = people.find(p => p.id === actionMenuVisible);
-                    if (person) {
-                      openEditModal(person);
-                    }
-                    setActionMenuVisible(null);
-                  }}
-                >
-                  <Ionicons name="create" size={24} color="#2196F3" />
-                  <Text style={styles.actionMenuText}>Düzenle</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.actionMenuItem}
-                  onPress={() => {
-                    if (actionMenuVisible) {
-                      deletePerson(actionMenuVisible);
-                    }
-                    setActionMenuVisible(null);
-                  }}
-                >
-                  <Ionicons name="trash" size={24} color="#9CA3AF" />
-                  <Text style={styles.actionMenuText}>Sil</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
     </SafeAreaView>
   );
 }
@@ -1553,53 +1497,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     marginHorizontal: 15,
   },
-  // Action Menu Styles - Bottom Sheet
-  actionMenuOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  actionMenuBackdrop: {
-    flex: 1,
-  },
-  actionMenuBottomSheet: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingBottom: 34, // Safe area bottom
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionMenuHandle: {
-    width: 36,
-    height: 4,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  actionMenuContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  actionMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginVertical: 4,
-  },
-  actionMenuText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#1A1A1A',
-    marginLeft: 12,
-  },
+
   fabContainer: {
     position: 'absolute',
     bottom: 30,
