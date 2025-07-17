@@ -65,7 +65,7 @@ function CustomTabBar({ state, descriptors, navigation }: {
         const getIcon = () => {
           if (route.name === 'index') {
             return <Ionicons name="people" size={28} color={isFocused ? primaryColor : '#6B7280'} />;
-          } else if (route.name === 'explore') {
+          } else if (route.name === 'expenses') {
             return <Ionicons name="wallet" size={28} color={isFocused ? primaryColor : '#6B7280'} />;
           }
           return null;
@@ -111,7 +111,7 @@ export default function TabLayout() {
         }}
       />
       <MaterialTabs.Screen
-        name="explore"
+        name="expenses"
         options={{
           title: 'Giderler',
           tabBarAccessibilityLabel: 'Giderler',
